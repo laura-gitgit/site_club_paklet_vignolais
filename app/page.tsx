@@ -1,58 +1,70 @@
-import Link from "next/link";
+import Image from "next/image";
+import { getEvenements } from "@/lib/clubData";
 
-export default function Home() {
+export default async function Home() {
+  const evenements = await getEvenements(3);
+
   return (
     <div className="grid gap-10">
       <section className="card grid gap-6">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-blue-900">
-          Club de palet
+          Presentation du club
         </p>
         <h1 className="text-4xl font-semibold text-slate-900 md:text-5xl">
-          Bienvenue au Club de Palet Vignolais
+          Association Pa[K]let Vignolais
         </h1>
         <p className="max-w-2xl text-lg leading-8 text-slate-600">
-          Retrouvez les infos du club, les joueurs actifs, le tirage au sort
-          et le tournoi interne 1vs1.
+          Association de palet basee a Vigneux, nous partageons entrainements,
+          rencontres et moments conviviaux autour du jeu.
         </p>
-        <div className="flex flex-wrap gap-4">
-          <Link className="button-primary" href="/tirage-au-sort">
-            Tirage au sort
-          </Link>
-          <Link className="button-muted" href="/tournoi">
-            Tournoi interne
-          </Link>
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <Image
+            src="/images/paklet_vignolais_recrute.jpeg"
+            alt="Association Pa[K]let Vignolais"
+            width={960}
+            height={540}
+            className="h-auto w-full object-cover"
+          />
         </div>
       </section>
 
-      <section className="grid gap-6 md:grid-cols-3">
-        <div className="card">
-          <h2 className="text-2xl font-semibold text-blue-900">Classement/Calendrier</h2>
-          <p className="mt-3 text-slate-600">
-            Consultez le classement general des joueurs et leurs points.
+      <section className="card">
+        <div>
+          <h2 className="text-2xl font-semibold text-blue-900">Evenements</h2>
+          <p className="mt-2 text-slate-600">
+            Les actualites et rendez-vous du club.
           </p>
-          <Link className="mt-6 inline-flex text-sm font-semibold text-blue-900" href="/classement">
-            Voir le classement
-          </Link>
         </div>
-        <div className="card">
-          <h2 className="text-2xl font-semibold text-blue-900">Joueurs</h2>
-          <p className="mt-3 text-slate-600">
-            Ajoutez, activez ou retirez des joueurs du club.
-          </p>
-          <Link className="mt-6 inline-flex text-sm font-semibold text-blue-900" href="/joueurs">
-            Gérer les joueurs
-          </Link>
-        </div>
-        <div className="card">
-          <h2 className="text-2xl font-semibold text-blue-900">Tournoi 1vs1</h2>
-          <p className="mt-3 text-slate-600">
-            Generez un prochain match et enregistrez les scores.
-          </p>
-          <Link className="mt-6 inline-flex text-sm font-semibold text-blue-900" href="/tournoi">
-            Acceder au tournoi
-          </Link>
-        </div>
+
+        {evenements.length === 0 ? (
+          <p className="mt-4 text-slate-600">Aucun evenement pour le moment.</p>
+        ) : (
+          <div className="mt-6 grid gap-5 lg:grid-cols-3">
+            {evenements.map((evenement) => (
+              <div key={evenement.id} className="rounded-xl border border-slate-200 bg-white p-4">
+                <h3 className="text-lg font-semibold text-blue-900">{evenement.titre}</h3>
+                <p className="mt-2 text-sm text-slate-600">{evenement.texte}</p>
+                {evenement.photoUrls.length > 0 && (
+                  <div className="mt-3 grid gap-2">
+                    {evenement.photoUrls.map((url, index) => (
+                      <div key={`${evenement.id}-${index}`} className="overflow-hidden rounded-lg">
+                        <Image
+                          src={url}
+                          alt={`Evenement ${evenement.titre} ${index + 1}`}
+                          width={640}
+                          height={420}
+                          className="h-auto w-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </section>
+
     </div>
   );
 }

@@ -40,6 +40,18 @@ export type ClassementAsset = {
   url: string;
 };
 
+export type Evenement = {
+  id: number;
+  titre: string;
+  texte: string;
+  photo_paths: string[];
+  created_at: string;
+};
+
+export type EvenementView = Evenement & {
+  photoUrls: string[];
+};
+
 export async function getAllPlayers(): Promise<Joueur[]> {
   const { data, error } = await supabase
     .from("joueurs")
@@ -112,6 +124,33 @@ export async function getClassementAssets(): Promise<ClassementAsset[]> {
       path: asset.path,
       url: publicUrl.publicUrl,
     };
+  });
+}
+
+export async function getEvenements(limit?: number): Promise<EvenementView[]> {
+  let query = supabase
+    .from("evenements")
+    .select("id, titre, texte, photo_paths, created_at")
+    .order("created_at", { ascending: false });
+
+  if (limit) {
+    query = query.limit(limit);
+  }
+
+  const { data, error } = await query;
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as Evenement[]).map((evenement) => {
+    const photoUrls = (evenement.photo_paths ?? []).map((path) => {
+      const { data: publicUrl } = supabase.storage
+        .from("club-images")
+        .getPublicUrl(path);
+      return publicUrl.publicUrl;
+    });
+    return { ...evenement, photoUrls };
   });
 }
 

@@ -65,8 +65,8 @@ export default function RootLayout({
                     </Link>
                   </li>
                   <li>
-                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/classement">
-                      Classement/Calendrier
+                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/evenements">
+                      Evenements
                     </Link>
                   </li>
                   <li>
@@ -77,6 +77,11 @@ export default function RootLayout({
                   <li>
                     <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/tournoi">
                       Tournoi interne 1vs1
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/entrainements">
+                      Entrainements
                     </Link>
                   </li>
                   <li>

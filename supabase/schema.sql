@@ -33,10 +33,19 @@ create table if not exists public.classement_assets (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.evenements (
+  id bigserial primary key,
+  titre text not null,
+  texte text not null,
+  photo_paths text[] not null default '{}',
+  created_at timestamptz not null default now()
+);
+
 alter table public.joueurs enable row level security;
 alter table public.rencontre_matches enable row level security;
 alter table public.rencontres enable row level security;
 alter table public.classement_assets enable row level security;
+alter table public.evenements enable row level security;
 
 drop policy if exists "Public read joueurs" on public.joueurs;
 drop policy if exists "Public insert joueurs" on public.joueurs;
@@ -104,6 +113,23 @@ create policy "Public update classement assets" on public.classement_assets
   for update to public using (true) with check (true);
 
 create policy "Public delete classement assets" on public.classement_assets
+  for delete to public using (true);
+
+drop policy if exists "Public read evenements" on public.evenements;
+drop policy if exists "Public insert evenements" on public.evenements;
+drop policy if exists "Public update evenements" on public.evenements;
+drop policy if exists "Public delete evenements" on public.evenements;
+
+create policy "Public read evenements" on public.evenements
+  for select to public using (true);
+
+create policy "Public insert evenements" on public.evenements
+  for insert to public with check (true);
+
+create policy "Public update evenements" on public.evenements
+  for update to public using (true) with check (true);
+
+create policy "Public delete evenements" on public.evenements
   for delete to public using (true);
 
 insert into storage.buckets (id, name, public)

@@ -10,7 +10,7 @@ export default function GestionPage() {
         </p>
       </header>
 
-      <section className="grid gap-4 md:grid-cols-3">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div className="card">
           <h2 className="text-2xl font-semibold text-blue-900">Gerer joueurs</h2>
           <p className="mt-2 text-slate-600">Ajouter, activer ou supprimer des joueurs.</p>
@@ -27,8 +27,22 @@ export default function GestionPage() {
         </div>
         <div className="card">
           <h2 className="text-2xl font-semibold text-blue-900">Gerer classement</h2>
-          <p className="mt-2 text-slate-600">Rencontres D3/D4 et photos des classements.</p>
+          <p className="mt-2 text-slate-600">Rencontres Equipe 1/2 et photos des classements.</p>
           <Link className="mt-6 inline-flex text-sm font-semibold text-blue-900" href="/gestion/classement">
+            Ouvrir la gestion
+          </Link>
+        </div>
+        <div className="card">
+          <h2 className="text-2xl font-semibold text-blue-900">Gerer entrainements</h2>
+          <p className="mt-2 text-slate-600">Ajouter des photos d exercices et ateliers.</p>
+          <Link className="mt-6 inline-flex text-sm font-semibold text-blue-900" href="/gestion/entrainements">
+            Ouvrir la gestion
+          </Link>
+        </div>
+        <div className="card">
+          <h2 className="text-2xl font-semibold text-blue-900">Gerer evenements</h2>
+          <p className="mt-2 text-slate-600">Ajouter des textes et photos pour les evenements.</p>
+          <Link className="mt-6 inline-flex text-sm font-semibold text-blue-900" href="/gestion/evenements">
             Ouvrir la gestion
           </Link>
         </div>
