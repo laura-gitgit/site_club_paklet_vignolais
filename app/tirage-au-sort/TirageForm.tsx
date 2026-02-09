@@ -26,19 +26,19 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
         <div className="card">
           <h2 className="text-2xl font-semibold text-blue-900">Joueurs disponibles</h2>
           {joueurs.length > 0 ? (
-            <div className="mt-4 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {joueurs.map((joueur) => (
                 <label
                   key={joueur.id}
-                  className="flex items-center gap-3 rounded-lg border border-slate-200 px-3 py-2 hover:bg-blue-50"
+                  className="flex min-h-[48px] items-center gap-4 rounded-xl border border-slate-200 px-4 py-3 text-base text-slate-700 transition hover:bg-blue-50 active:scale-[0.99]"
                 >
                   <input
                     type="checkbox"
                     name="joueurs"
                     value={joueur.id}
-                    className="h-4 w-4 accent-blue-900"
+                    className="h-5 w-5 accent-blue-900"
                   />
-                  <span className="text-sm text-slate-700">{joueurLabel(joueur)}</span>
+                  <span className="select-none">{joueurLabel(joueur)}</span>
                 </label>
               ))}
             </div>
