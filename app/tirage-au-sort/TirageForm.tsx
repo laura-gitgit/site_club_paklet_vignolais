@@ -30,7 +30,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
               {joueurs.map((joueur) => (
                 <label
                   key={joueur.id}
-                  className="flex min-h-[48px] items-center gap-4 rounded-xl border border-slate-200 px-4 py-3 text-base text-slate-700 transition hover:bg-blue-50 active:scale-[0.99]"
+                  className="flex min-h-12 items-center gap-4 rounded-xl border border-slate-200 px-4 py-3 text-base text-slate-700 transition hover:bg-blue-50 active:scale-[0.99]"
                 >
                   <input
                     type="checkbox"

@@ -1,5 +1,8 @@
 import { Suspense } from "react";
-import LoginForm from "@/app/gestion/login/LoginForm";
+import LoginForm from "./LoginForm";
+
+
+export const dynamic = "force-dynamic";
 
 export default function GestionLoginPage() {
   return (
