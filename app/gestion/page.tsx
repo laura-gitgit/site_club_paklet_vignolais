@@ -1,13 +1,17 @@
 import Link from "next/link";
+import LogoutButton from "@/app/gestion/LogoutButton";
 
 export default function GestionPage() {
   return (
     <div className="grid gap-6">
-      <header>
-        <h1 className="text-4xl font-semibold text-blue-900">Gestion</h1>
-        <p className="mt-2 text-lg text-slate-600">
-          Acces reserve aux administrateurs (bientot).
-        </p>
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-4xl font-semibold text-blue-900">Gestion</h1>
+          <p className="mt-2 text-lg text-slate-600">
+            Acces reserve aux administrateurs (bientot).
+          </p>
+        </div>
+        <LogoutButton />
       </header>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">

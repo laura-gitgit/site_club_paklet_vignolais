@@ -52,6 +52,11 @@ export default function RootLayout({
                     </Link>
                   </li>
                   <li>
+                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/classement">
+                      Classement
+                    </Link>
+                  </li>
+                  <li>
                     <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/tirage-au-sort">
                       Tirage au sort
                     </Link>

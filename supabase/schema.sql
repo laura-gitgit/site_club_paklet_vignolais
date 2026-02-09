@@ -41,11 +41,18 @@ create table if not exists public.evenements (
   created_at timestamptz not null default now()
 );
 
+create table if not exists public.admin_users (
+  id bigserial primary key,
+  email text not null unique,
+  created_at timestamptz not null default now()
+);
+
 alter table public.joueurs enable row level security;
 alter table public.rencontre_matches enable row level security;
 alter table public.rencontres enable row level security;
 alter table public.classement_assets enable row level security;
 alter table public.evenements enable row level security;
+alter table public.admin_users enable row level security;
 
 drop policy if exists "Public read joueurs" on public.joueurs;
 drop policy if exists "Public insert joueurs" on public.joueurs;
@@ -131,6 +138,27 @@ create policy "Public update evenements" on public.evenements
 
 create policy "Public delete evenements" on public.evenements
   for delete to public using (true);
+
+drop policy if exists "Admin read own record" on public.admin_users;
+drop policy if exists "Admin insert" on public.admin_users;
+drop policy if exists "Admin update" on public.admin_users;
+drop policy if exists "Admin delete" on public.admin_users;
+
+create policy "Admin read own record" on public.admin_users
+  for select to authenticated using (auth.email() = email);
+
+create policy "Admin insert" on public.admin_users
+  for insert to authenticated with check (auth.email() = email);
+
+create policy "Admin update" on public.admin_users
+  for update to authenticated using (auth.email() = email) with check (auth.email() = email);
+
+create policy "Admin delete" on public.admin_users
+  for delete to authenticated using (auth.email() = email);
+
+insert into public.admin_users (email)
+values ('laura.boudard@gmail.com')
+on conflict (email) do nothing;
 
 insert into storage.buckets (id, name, public)
 values ('club-images', 'club-images', true)
