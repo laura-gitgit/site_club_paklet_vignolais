@@ -1,0 +1,6 @@
+<svg width="480" height="270" viewBox="0 0 480 270" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="480" height="270" rx="24" fill="#DBEAFE"/>
+  <rect x="40" y="50" width="160" height="120" rx="16" fill="#93C5FD"/>
+  <rect x="210" y="70" width="230" height="140" rx="16" fill="#60A5FA"/>
+  <text x="240" y="210" font-size="18" text-anchor="middle" fill="#1E293B" font-family="Arial, sans-serif">Photo Groupe</text>
+</svg>
