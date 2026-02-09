@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getActivePlayers, getMatches } from "@/lib/clubData";
 import { supabase } from "@/lib/supabaseClient";
+import ResetTournoiForm from "@/app/gestion/tournoi/ResetTournoiForm";
 
 type PageProps = {
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -135,6 +136,18 @@ async function ajouterMatchManuel(formData: FormData) {
   redirect("/gestion/tournoi?success=match");
 }
 
+async function reinitialiserTournoi() {
+  "use server";
+  const { error } = await supabase.from("rencontre_matches").delete().neq("id", 0);
+  if (error) {
+    redirect("/gestion/tournoi?error=reset");
+  }
+
+  revalidatePath("/tournoi");
+  revalidatePath("/gestion/tournoi");
+  redirect("/gestion/tournoi?success=reset");
+}
+
 export default async function GestionTournoiPage({ searchParams }: PageProps) {
   const [players, matches] = await Promise.all([
     getActivePlayers(),
@@ -258,6 +271,14 @@ export default async function GestionTournoiPage({ searchParams }: PageProps) {
             </button>
           </form>
         )}
+      </section>
+
+      <section className="card">
+        <h2 className="text-2xl font-semibold text-blue-900">Reinitialiser le tournoi</h2>
+        <p className="mt-2 text-slate-600">
+          Supprime tous les matchs 1vs1 pour repartir de zero.
+        </p>
+        <ResetTournoiForm action={reinitialiserTournoi} />
       </section>
     </div>
   );
