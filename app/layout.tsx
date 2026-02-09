@@ -80,11 +80,6 @@ export default function RootLayout({
                     </Link>
                   </li>
                   <li>
-                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/joueurs">
-                      Gestion joueurs
-                    </Link>
-                  </li>
-                  <li>
                     <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/gestion">
                       Gestion
                     </Link>

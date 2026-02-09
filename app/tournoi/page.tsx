@@ -7,7 +7,16 @@ type PageProps = {
   searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-async function genererMatch() {
+function shuffle<T>(items: T[]): T[] {
+  const copy = [...items];
+  for (let i = copy.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+async function genererTour() {
   "use server";
   const [players, matches] = await Promise.all([
     getActivePlayers(),
@@ -18,6 +27,10 @@ async function genererMatch() {
     redirect("/tournoi?error=players");
   }
 
+  if (matches.some((match) => !match.joue)) {
+    redirect("/tournoi?info=pending");
+  }
+
   const playedPairs = new Set<string>();
   for (const match of matches) {
     const a = Math.min(match.joueur1_id, match.joueur2_id);
@@ -25,35 +38,66 @@ async function genererMatch() {
     playedPairs.add(`${a}-${b}`);
   }
 
-  let created = false;
-  for (let i = 0; i < players.length && !created; i += 1) {
-    for (let j = i + 1; j < players.length && !created; j += 1) {
-      const a = Math.min(players[i].id, players[j].id);
-      const b = Math.max(players[i].id, players[j].id);
-      if (playedPairs.has(`${a}-${b}`)) {
+  const shuffledPlayers = shuffle(players);
+  const usedPlayers = new Set<number>();
+  const newMatches: Array<{ joueur1_id: number; joueur2_id: number; joue: boolean }> = [];
+
+  for (let i = 0; i < shuffledPlayers.length; i += 1) {
+    const joueurA = shuffledPlayers[i];
+    if (usedPlayers.has(joueurA.id)) {
+      continue;
+    }
+
+    let opponentIndex = -1;
+    for (let j = i + 1; j < shuffledPlayers.length; j += 1) {
+      const joueurB = shuffledPlayers[j];
+      if (usedPlayers.has(joueurB.id)) {
         continue;
       }
-
-      const { error } = await supabase.from("rencontre_matches").insert({
-        joueur1_id: players[i].id,
-        joueur2_id: players[j].id,
-        joue: false,
-      });
-
-      if (error) {
-        redirect("/tournoi?error=create");
+      const a = Math.min(joueurA.id, joueurB.id);
+      const b = Math.max(joueurA.id, joueurB.id);
+      if (!playedPairs.has(`${a}-${b}`)) {
+        opponentIndex = j;
+        break;
       }
-
-      created = true;
     }
+
+    if (opponentIndex === -1) {
+      for (let j = i + 1; j < shuffledPlayers.length; j += 1) {
+        const joueurB = shuffledPlayers[j];
+        if (!usedPlayers.has(joueurB.id)) {
+          opponentIndex = j;
+          break;
+        }
+      }
+    }
+
+    if (opponentIndex === -1) {
+      continue;
+    }
+
+    const joueurB = shuffledPlayers[opponentIndex];
+    usedPlayers.add(joueurA.id);
+    usedPlayers.add(joueurB.id);
+
+    newMatches.push({
+      joueur1_id: joueurA.id,
+      joueur2_id: joueurB.id,
+      joue: false,
+    });
   }
 
-  revalidatePath("/tournoi");
-  if (!created) {
+  if (newMatches.length === 0) {
     redirect("/tournoi?info=done");
   }
 
-  redirect("/tournoi?success=match");
+  const { error } = await supabase.from("rencontre_matches").insert(newMatches);
+  if (error) {
+    redirect("/tournoi?error=create");
+  }
+
+  revalidatePath("/tournoi");
+  redirect("/tournoi?success=round");
 }
 
 async function enregistrerScore(formData: FormData) {
@@ -89,15 +133,12 @@ export default async function TournoiPage({ searchParams }: PageProps) {
     getMatches(),
   ]);
   const classement = buildClassement(players, matches);
-  const prochainMatch = matches.find((match) => !match.joue);
+  const matchesEnAttente = matches.filter((match) => !match.joue);
   const playersById = new Map(players.map((player) => [player.id, player]));
 
   const success = searchParams?.success;
   const error = searchParams?.error;
   const info = searchParams?.info;
-
-  const joueur1 = prochainMatch ? playersById.get(prochainMatch.joueur1_id) : null;
-  const joueur2 = prochainMatch ? playersById.get(prochainMatch.joueur2_id) : null;
 
   return (
     <div className="grid gap-6">
@@ -120,72 +161,78 @@ export default async function TournoiPage({ searchParams }: PageProps) {
       )}
       {info && (
         <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-          Tous les joueurs se sont deja rencontres.
+          {info === "pending"
+            ? "Des matchs sont deja en attente."
+            : "Tous les joueurs se sont deja rencontres."}
         </div>
       )}
 
       <section className="card">
-        <h2 className="text-2xl font-semibold text-blue-900">Prochain match</h2>
-        {prochainMatch && joueur1 && joueur2 ? (
+        <h2 className="text-2xl font-semibold text-blue-900">Matchs du tour</h2>
+        {matchesEnAttente.length > 0 ? (
           <div className="mt-4 grid gap-4">
-            <div className="rounded-xl bg-gradient-to-r from-blue-50 to-blue-100 p-6">
-              <div className="grid items-center gap-6 md:grid-cols-3">
-                <div className="text-center">
-                  <p className="text-xs uppercase tracking-wide text-slate-500">Joueur 1</p>
-                  <p className="text-2xl font-semibold text-blue-900">
-                    {joueur1.prenom ?? joueur1.nom}
-                  </p>
-                </div>
-                <div className="text-center text-3xl font-semibold text-blue-900">VS</div>
-                <div className="text-center">
-                  <p className="text-xs uppercase tracking-wide text-slate-500">Joueur 2</p>
-                  <p className="text-2xl font-semibold text-blue-900">
-                    {joueur2.prenom ?? joueur2.nom}
-                  </p>
-                </div>
-              </div>
-            </div>
+            {matchesEnAttente.map((match) => {
+              const joueur1 = playersById.get(match.joueur1_id);
+              const joueur2 = playersById.get(match.joueur2_id);
+              if (!joueur1 || !joueur2) {
+                return null;
+              }
+              const scoreJ1Id = `score_joueur1_${match.id}`;
+              const scoreJ2Id = `score_joueur2_${match.id}`;
 
-            <form action={enregistrerScore} className="grid gap-4 md:grid-cols-3">
-              <input type="hidden" name="id" value={prochainMatch.id} />
-              <div>
-                <label className="block text-sm font-semibold text-slate-700" htmlFor="score_joueur1">
-                  Score {joueur1.prenom ?? joueur1.nom}
-                </label>
-                <input
-                  id="score_joueur1"
-                  name="score_joueur1"
-                  type="number"
-                  min={0}
-                  required
-                  className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-2 text-center text-lg"
-                />
-              </div>
-              <div className="flex items-end justify-center text-lg font-semibold text-slate-500">-</div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700" htmlFor="score_joueur2">
-                  Score {joueur2.prenom ?? joueur2.nom}
-                </label>
-                <input
-                  id="score_joueur2"
-                  name="score_joueur2"
-                  type="number"
-                  min={0}
-                  required
-                  className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-2 text-center text-lg"
-                />
-              </div>
-              <button className="button-primary md:col-span-3" type="submit">
-                Enregistrer le score
-              </button>
-            </form>
+              return (
+                <div key={match.id} className="rounded-xl border border-blue-100 bg-white p-5">
+                  <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-wide text-slate-500">Match</p>
+                      <p className="text-lg font-semibold text-blue-900">
+                        {joueur1.prenom ?? joueur1.nom} vs {joueur2.prenom ?? joueur2.nom}
+                      </p>
+                    </div>
+                    <form action={enregistrerScore} className="grid gap-3 md:grid-cols-5 md:items-end">
+                      <input type="hidden" name="id" value={match.id} />
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-600" htmlFor={scoreJ1Id}>
+                          Score {joueur1.prenom ?? joueur1.nom}
+                        </label>
+                        <input
+                          id={scoreJ1Id}
+                          name="score_joueur1"
+                          type="number"
+                          min={0}
+                          required
+                          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-center"
+                        />
+                      </div>
+                      <div className="hidden text-center text-lg font-semibold text-slate-500 md:block">-</div>
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-600" htmlFor={scoreJ2Id}>
+                          Score {joueur2.prenom ?? joueur2.nom}
+                        </label>
+                        <input
+                          id={scoreJ2Id}
+                          name="score_joueur2"
+                          type="number"
+                          min={0}
+                          required
+                          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-center"
+                        />
+                      </div>
+                      <button className="button-primary md:col-span-5" type="submit">
+                        Enregistrer le score
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div className="mt-4 rounded-xl bg-slate-100 p-6 text-center">
             <p className="text-slate-600">Aucun match en attente</p>
-            <form action={genererMatch} className="mt-4">
+            <form action={genererTour} className="mt-4">
               <button className="button-primary" type="submit">
-                Generer le prochain match
+                Generer les matchs du tour
               </button>
             </form>
           </div>
@@ -203,8 +250,6 @@ export default async function TournoiPage({ searchParams }: PageProps) {
                   <th className="px-6 py-3">Joueur</th>
                   <th className="px-6 py-3 text-center">Matchs</th>
                   <th className="px-6 py-3 text-center">Points</th>
-                  <th className="px-6 py-3 text-center">For</th>
-                  <th className="px-6 py-3 text-center">Contre</th>
                   <th className="px-6 py-3 text-center">GA</th>
                 </tr>
               </thead>
@@ -222,12 +267,6 @@ export default async function TournoiPage({ searchParams }: PageProps) {
                     </td>
                     <td className="px-6 py-3 text-center font-semibold text-blue-900">
                       {ligne.points}
-                    </td>
-                    <td className="px-6 py-3 text-center text-slate-700">
-                      {ligne.goalsFor}
-                    </td>
-                    <td className="px-6 py-3 text-center text-slate-700">
-                      {ligne.goalsAgainst}
                     </td>
                     <td
                       className={`px-6 py-3 text-center font-semibold ${
