@@ -7,99 +7,6 @@ type PageProps = {
   searchParams?: { [key: string]: string | string[] | undefined };
 };
 
-function shuffle<T>(items: T[]): T[] {
-  const copy = [...items];
-  for (let i = copy.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
-}
-
-async function genererTour() {
-  "use server";
-  const [players, matches] = await Promise.all([
-    getActivePlayers(),
-    getMatches(),
-  ]);
-
-  if (players.length < 2) {
-    redirect("/tournoi?error=players");
-  }
-
-  if (matches.some((match) => !match.joue)) {
-    redirect("/tournoi?info=pending");
-  }
-
-  const playedPairs = new Set<string>();
-  for (const match of matches) {
-    const a = Math.min(match.joueur1_id, match.joueur2_id);
-    const b = Math.max(match.joueur1_id, match.joueur2_id);
-    playedPairs.add(`${a}-${b}`);
-  }
-
-  const shuffledPlayers = shuffle(players);
-  const usedPlayers = new Set<number>();
-  const newMatches: Array<{ joueur1_id: number; joueur2_id: number; joue: boolean }> = [];
-
-  for (let i = 0; i < shuffledPlayers.length; i += 1) {
-    const joueurA = shuffledPlayers[i];
-    if (usedPlayers.has(joueurA.id)) {
-      continue;
-    }
-
-    let opponentIndex = -1;
-    for (let j = i + 1; j < shuffledPlayers.length; j += 1) {
-      const joueurB = shuffledPlayers[j];
-      if (usedPlayers.has(joueurB.id)) {
-        continue;
-      }
-      const a = Math.min(joueurA.id, joueurB.id);
-      const b = Math.max(joueurA.id, joueurB.id);
-      if (!playedPairs.has(`${a}-${b}`)) {
-        opponentIndex = j;
-        break;
-      }
-    }
-
-    if (opponentIndex === -1) {
-      for (let j = i + 1; j < shuffledPlayers.length; j += 1) {
-        const joueurB = shuffledPlayers[j];
-        if (!usedPlayers.has(joueurB.id)) {
-          opponentIndex = j;
-          break;
-        }
-      }
-    }
-
-    if (opponentIndex === -1) {
-      continue;
-    }
-
-    const joueurB = shuffledPlayers[opponentIndex];
-    usedPlayers.add(joueurA.id);
-    usedPlayers.add(joueurB.id);
-
-    newMatches.push({
-      joueur1_id: joueurA.id,
-      joueur2_id: joueurB.id,
-      joue: false,
-    });
-  }
-
-  if (newMatches.length === 0) {
-    redirect("/tournoi?info=done");
-  }
-
-  const { error } = await supabase.from("rencontre_matches").insert(newMatches);
-  if (error) {
-    redirect("/tournoi?error=create");
-  }
-
-  revalidatePath("/tournoi");
-  redirect("/tournoi?success=round");
-}
-
 async function enregistrerScore(formData: FormData) {
   "use server";
   const id = Number(formData.get("id"));
@@ -138,7 +45,6 @@ export default async function TournoiPage({ searchParams }: PageProps) {
 
   const success = searchParams?.success;
   const error = searchParams?.error;
-  const info = searchParams?.info;
 
   return (
     <div className="grid gap-6">
@@ -159,14 +65,6 @@ export default async function TournoiPage({ searchParams }: PageProps) {
           Une erreur est survenue.
         </div>
       )}
-      {info && (
-        <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-700">
-          {info === "pending"
-            ? "Des matchs sont deja en attente."
-            : "Tous les joueurs se sont deja rencontres."}
-        </div>
-      )}
-
       <section className="card">
         <h2 className="text-2xl font-semibold text-blue-900">Matchs du tour</h2>
         {matchesEnAttente.length > 0 ? (
@@ -230,11 +128,9 @@ export default async function TournoiPage({ searchParams }: PageProps) {
         ) : (
           <div className="mt-4 rounded-xl bg-slate-100 p-6 text-center">
             <p className="text-slate-600">Aucun match en attente</p>
-            <form action={genererTour} className="mt-4">
-              <button className="button-primary" type="submit">
-                Generer les matchs du tour
-              </button>
-            </form>
+            <p className="mt-2 text-sm text-slate-500">
+              La generation des matchs se fait dans la page Gestion tournoi.
+            </p>
           </div>
         )}
       </section>

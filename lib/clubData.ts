@@ -25,6 +25,21 @@ export type ClassementLine = {
   goalAverage: number;
 };
 
+export type Rencontre = {
+  id: number;
+  equipe: string;
+  type: string;
+  date: string;
+  lieu: string;
+  adversaire: string;
+};
+
+export type ClassementAsset = {
+  key: string;
+  path: string;
+  url: string;
+};
+
 export async function getAllPlayers(): Promise<Joueur[]> {
   const { data, error } = await supabase
     .from("joueurs")
@@ -63,6 +78,41 @@ export async function getMatches(): Promise<RencontreMatch[]> {
   }
 
   return data as RencontreMatch[];
+}
+
+export async function getRencontres(): Promise<Rencontre[]> {
+  const { data, error } = await supabase
+    .from("rencontres")
+    .select("id, equipe, type, date, lieu, adversaire")
+    .order("date", { ascending: true });
+
+  if (error || !data) {
+    return [];
+  }
+
+  return data as Rencontre[];
+}
+
+export async function getClassementAssets(): Promise<ClassementAsset[]> {
+  const { data, error } = await supabase
+    .from("classement_assets")
+    .select("key, path")
+    .order("key", { ascending: true });
+
+  if (error || !data) {
+    return [];
+  }
+
+  return (data as Array<{ key: string; path: string }>).map((asset) => {
+    const { data: publicUrl } = supabase.storage
+      .from("club-images")
+      .getPublicUrl(asset.path);
+    return {
+      key: asset.key,
+      path: asset.path,
+      url: publicUrl.publicUrl,
+    };
+  });
 }
 
 export function buildClassement(players: Joueur[], matches: RencontreMatch[]): ClassementLine[] {

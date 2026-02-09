@@ -1,11 +1,35 @@
-import { buildClassement, getActivePlayers, getMatches } from "@/lib/clubData";
+import Image from "next/image";
+import { getClassementAssets, getRencontres } from "@/lib/clubData";
 
 export default async function ClassementPage() {
-  const [players, matches] = await Promise.all([
-    getActivePlayers(),
-    getMatches(),
+  const [rencontres, assets] = await Promise.all([
+    getRencontres(),
+    getClassementAssets(),
   ]);
-  const classement = buildClassement(players, matches);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const assetMap = new Map(assets.map((asset) => [asset.key, asset.url]));
+  const resolveAsset = (key: string, fallback: string) => assetMap.get(key) ?? fallback;
+
+  const rencontresEquipe1 = rencontres.filter((rencontre) => rencontre.equipe === "Equipe 1");
+  const rencontresEquipe2 = rencontres.filter((rencontre) => rencontre.equipe === "Equipe 2");
+
+  const formatDate = (value: string) =>
+    new Date(`${value}T00:00:00`).toLocaleDateString("fr-FR");
+
+  const buildRencontreView = (items: typeof rencontres) => {
+    const sorted = [...items].sort((a, b) =>
+      new Date(`${a.date}T00:00:00`).getTime() - new Date(`${b.date}T00:00:00`).getTime()
+    );
+    const upcoming = sorted.filter(
+      (rencontre) => new Date(`${rencontre.date}T00:00:00`).getTime() >= today.getTime()
+    );
+    return { prochaine: upcoming[0] ?? null };
+  };
+
+  const rencontresViewEquipe1 = buildRencontreView(rencontresEquipe1);
+  const rencontresViewEquipe2 = buildRencontreView(rencontresEquipe2);
 
   return (
     <div className="grid gap-6">
@@ -16,38 +40,91 @@ export default async function ClassementPage() {
         </p>
       </header>
 
-      <section className="card overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="bg-blue-900 text-white">
-              <tr>
-                <th className="px-6 py-3">Rang</th>
-                <th className="px-6 py-3">Joueur</th>
-                <th className="px-6 py-3">Points</th>
-              </tr>
-            </thead>
-            <tbody>
-              {classement.length === 0 && (
-                <tr>
-                  <td className="px-6 py-4 text-slate-500" colSpan={3}>
-                    Aucun joueur ou aucun match enregistre.
-                  </td>
-                </tr>
-              )}
-              {classement.map((ligne, index) => (
-                <tr key={ligne.joueur.id} className="border-b last:border-b-0">
-                  <td className="px-6 py-3 font-semibold text-blue-900">
-                    {index + 1}
-                  </td>
-                  <td className="px-6 py-3 text-slate-700">
-                    {ligne.joueur.prenom ?? ligne.joueur.nom}
-                  </td>
-                  <td className="px-6 py-3 text-slate-700">{ligne.points}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+      <section className="grid gap-6 lg:grid-cols-2">
+        {[
+          {
+            key: "Equipe 1",
+            title: "Classement Equipe 1",
+            image: resolveAsset("classement_equipe1", "/images/classement_equipe1.png"),
+            calendrier: resolveAsset("calendrier_equipe1", "/images/calendrier_equipe1.jpg"),
+            rencontresView: rencontresViewEquipe1,
+          },
+          {
+            key: "Equipe 2",
+            title: "Classement Equipe 2",
+            image: resolveAsset("classement_equipe2", "/images/classement_equipe2.png"),
+            calendrier: resolveAsset("calendrier_equipe2", "/images/calendrier_equipe2.jpg"),
+            rencontresView: rencontresViewEquipe2,
+          },
+        ].map((section) => (
+          <div key={section.key} className="card overflow-hidden">
+            <div className="border-b border-slate-200 px-6 py-4">
+              <h2 className="text-2xl font-semibold text-blue-900">{section.title}</h2>
+            </div>
+            <div className="grid gap-6 px-6 py-5">
+              <a
+                href={section.image}
+                className="block rounded-xl bg-slate-100 p-3"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Image
+                  src={section.image}
+                  alt={section.title}
+                  width={800}
+                  height={520}
+                  className="h-auto w-full rounded-lg object-cover"
+                />
+                <p className="mt-2 text-sm font-semibold text-blue-900">
+                  Voir le classement en grand
+                </p>
+              </a>
+
+              <div className="rounded-xl border border-slate-200 bg-white p-4">
+                <h3 className="text-lg font-semibold text-blue-900">Prochaine rencontre</h3>
+                {section.rencontresView.prochaine ? (
+                  <div className="mt-3 grid gap-2 text-sm text-slate-700">
+                    <p>
+                      <span className="font-semibold">Date:</span> {formatDate(section.rencontresView.prochaine.date)}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Adversaire:</span> {section.rencontresView.prochaine.adversaire}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Lieu:</span> {section.rencontresView.prochaine.lieu}
+                    </p>
+                    <p>
+                      <span className="font-semibold">Type:</span> {section.rencontresView.prochaine.type}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="mt-3 text-sm text-slate-500">Aucune rencontre planifiee.</p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-blue-900">Calendrier Annuel</h3>
+                <a
+                  href={section.calendrier}
+                  className="mt-3 block rounded-xl border border-slate-200 bg-white p-3"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  <Image
+                    src={section.calendrier}
+                    alt={`Calendrier ${section.key}`}
+                    width={800}
+                    height={520}
+                    className="h-auto w-full rounded-lg object-cover"
+                  />
+                  <p className="mt-2 text-sm font-semibold text-blue-900">
+                    Voir le calendrier complet
+                  </p>
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
       </section>
     </div>
   );

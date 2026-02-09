@@ -26,7 +26,7 @@ export default function Home() {
 
       <section className="grid gap-6 md:grid-cols-3">
         <div className="card">
-          <h2 className="text-2xl font-semibold text-blue-900">Classement</h2>
+          <h2 className="text-2xl font-semibold text-blue-900">Classement/Calendrier</h2>
           <p className="mt-3 text-slate-600">
             Consultez le classement general des joueurs et leurs points.
           </p>
