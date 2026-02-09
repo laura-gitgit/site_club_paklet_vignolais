@@ -30,32 +30,14 @@ export default function RootLayout({
         <div className="min-h-screen bg-slate-50 text-slate-900">
           <header className="border-b border-slate-200 bg-white/80 backdrop-blur">
             <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6">
-              <div className="grid gap-3 md:grid-cols-3">
-                <div className="flex items-center justify-center rounded-xl bg-slate-100 p-3">
-                  <Image
-                    src="/images/logo.jpeg"
-                    alt="Logo du club"
-                    width={220}
-                    height={140}
-                    priority
-                  />
-                </div>
-                <div className="flex items-center justify-center rounded-xl bg-slate-200 p-3">
-                  <Image
-                    src="/images/groupe.jpg"
-                    alt="Photo du groupe"
-                    width={320}
-                    height={180}
-                  />
-                </div>
-                <div className="flex items-center justify-center rounded-xl bg-slate-100 p-3">
-                  <Image
-                    src="/images/planche.jpg"
-                    alt="Photo planche"
-                    width={320}
-                    height={180}
-                  />
-                </div>
+              <div className="flex items-center justify-center rounded-xl bg-slate-100 p-3">
+                <Image
+                  src="/images/logo.jpeg"
+                  alt="Logo du club"
+                  width={220}
+                  height={140}
+                  priority
+                />
               </div>
               <nav className="rounded-full bg-blue-900 px-4 py-3 text-white shadow">
                 <ul className="flex flex-wrap items-center justify-center gap-4 text-sm font-semibold uppercase tracking-wide">
