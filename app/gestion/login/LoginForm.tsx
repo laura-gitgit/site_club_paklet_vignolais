@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function LoginForm() {
@@ -10,7 +10,6 @@ export default function LoginForm() {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   return (
     <section className="card">
@@ -33,7 +32,10 @@ export default function LoginForm() {
             return;
           }
 
-          const next = searchParams.get("next") || "/gestion";
+          const next =
+            typeof window !== "undefined"
+              ? new URLSearchParams(window.location.search).get("next") || "/gestion"
+              : "/gestion";
           router.push(next);
           router.refresh();
         }}

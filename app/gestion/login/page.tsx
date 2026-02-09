@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import LoginForm from "./LoginForm";
 
 
@@ -16,9 +15,7 @@ export default function GestionLoginPage() {
         </p>
       </header>
 
-      <Suspense>
-        <LoginForm />
-      </Suspense>
+      <LoginForm />
     </div>
   );
 }
