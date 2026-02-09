@@ -1,8 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f8f8f8;
+  --foreground: #0b0b0b;
+  --club-black: #0b0b0b;
+  --club-red: #b91c1c;
+  --club-red-dark: #991b1b;
+  --club-red-soft: #fee2e2;
+  --club-red-light: #fef2f2;
+  --club-border: #e5e5e5;
 }
 
 @theme inline {
@@ -13,7 +19,7 @@
 }
 
 body {
-  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 60%, #f8fafc 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #fff1f2 60%, #ffffff 100%);
   color: var(--foreground);
   font-family: var(--font-body), system-ui, sans-serif;
 }
@@ -29,9 +35,51 @@ h3 {
 }
 
 .button-primary {
-  @apply rounded-full bg-blue-900 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-blue-800;
+  @apply rounded-full bg-red-700 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-red-800;
 }
 
 .button-muted {
   @apply rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold uppercase tracking-wide text-slate-700 transition hover:bg-slate-100;
+}
+
+@layer utilities {
+  .text-blue-900 {
+    color: var(--club-red) !important;
+  }
+
+  .text-blue-700 {
+    color: var(--club-red) !important;
+  }
+
+  .bg-blue-900 {
+    background-color: var(--club-black) !important;
+  }
+
+  .hover\:bg-blue-800:hover {
+    background-color: var(--club-red-dark) !important;
+  }
+
+  .bg-blue-50 {
+    background-color: var(--club-red-light) !important;
+  }
+
+  .bg-blue-100 {
+    background-color: var(--club-red-soft) !important;
+  }
+
+  .bg-blue-200 {
+    background-color: #fecaca !important;
+  }
+
+  .border-blue-200 {
+    border-color: #fecaca !important;
+  }
+
+  .accent-blue-900 {
+    accent-color: var(--club-red) !important;
+  }
+
+  .text-green-600 {
+    color: #15803d !important;
+  }
 }

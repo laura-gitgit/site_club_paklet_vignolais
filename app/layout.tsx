@@ -39,40 +39,40 @@ export default function RootLayout({
                   priority
                 />
               </div>
-              <nav className="rounded-full bg-blue-900 px-4 py-3 text-white shadow">
+              <nav className="rounded-full bg-black px-4 py-3 text-white shadow">
                 <ul className="flex flex-wrap items-center justify-center gap-4 text-sm font-semibold uppercase tracking-wide">
                   <li>
-                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/">
+                    <Link className="rounded-full px-4 py-2 transition hover:bg-red-700" href="/">
                       Accueil
                     </Link>
                   </li>
                   <li>
-                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/evenements">
+                    <Link className="rounded-full px-4 py-2 transition hover:bg-red-700" href="/evenements">
                       Evenements
                     </Link>
                   </li>
                   <li>
-                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/classement">
-                      Classement
+                    <Link className="rounded-full px-4 py-2 transition hover:bg-red-700" href="/classement">
+                      Classement/Calendrier
                     </Link>
                   </li>
                   <li>
-                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/tirage-au-sort">
+                    <Link className="rounded-full px-4 py-2 transition hover:bg-red-700" href="/tirage-au-sort">
                       Tirage au sort
                     </Link>
                   </li>
                   <li>
-                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/tournoi">
+                    <Link className="rounded-full px-4 py-2 transition hover:bg-red-700" href="/tournoi">
                       Tournoi interne 1vs1
                     </Link>
                   </li>
                   <li>
-                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/entrainements">
+                    <Link className="rounded-full px-4 py-2 transition hover:bg-red-700" href="/entrainements">
                       Entrainements
                     </Link>
                   </li>
                   <li>
-                    <Link className="rounded-full px-4 py-2 transition hover:bg-blue-800" href="/gestion">
+                    <Link className="rounded-full px-4 py-2 transition hover:bg-red-700" href="/gestion">
                       Gestion
                     </Link>
                   </li>
