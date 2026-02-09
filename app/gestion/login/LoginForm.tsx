@@ -20,24 +20,29 @@ export default function LoginForm() {
           setIsLoading(true);
           setError(null);
 
-          const supabase = createClientComponentClient();
-          const { error: signInError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
+          try {
+            const supabase = createClientComponentClient();
+            const { data, error: signInError } = await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
 
-          if (signInError) {
+            if (signInError || !data?.session) {
+              setError("Connexion impossible. Verifiez vos identifiants.");
+              return;
+            }
+
+            const next =
+              typeof window !== "undefined"
+                ? new URLSearchParams(window.location.search).get("next") || "/gestion"
+                : "/gestion";
+            router.push(next);
+            router.refresh();
+          } catch {
             setError("Connexion impossible. Verifiez vos identifiants.");
+          } finally {
             setIsLoading(false);
-            return;
           }
-
-          const next =
-            typeof window !== "undefined"
-              ? new URLSearchParams(window.location.search).get("next") || "/gestion"
-              : "/gestion";
-          router.push(next);
-          router.refresh();
         }}
       >
         <div>
