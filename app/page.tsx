@@ -37,7 +37,16 @@ export default async function Home() {
             accueillir.
           </p>
           <p>
-            N'hésitez pas à nous suivre sur Facebook : https://www.facebook.com/groups/857038471790923/discussion/preview?locale=fr_FR.
+            N'hésitez pas à nous suivre sur Facebook :{" "}
+            <a
+              href="https://www.facebook.com/groups/857038471790923/discussion/preview?locale=fr_FR"
+              className="font-semibold text-blue-900 underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Rejoindre le groupe
+            </a>
+            .
           </p>
         </div>
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
