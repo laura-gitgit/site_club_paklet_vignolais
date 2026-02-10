@@ -36,6 +36,9 @@ export default async function Home() {
             partager un bon moment. Le Paklet Vignolais recrute et sera heureux de vous
             accueillir.
           </p>
+          <p>
+            N'hésitez pas à nous suivre sur Facebook : https://www.facebook.com/groups/857038471790923/discussion/preview?locale=fr_FR.
+          </p>
         </div>
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
           <Image
