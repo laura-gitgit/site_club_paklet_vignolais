@@ -31,6 +31,33 @@ export default async function ClassementPage() {
   const rencontresViewEquipe1 = buildRencontreView(rencontresEquipe1);
   const rencontresViewEquipe2 = buildRencontreView(rencontresEquipe2);
 
+  const liensUtiles = [
+    {
+      label: "Calendrier D3",
+      href: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkHCiIxckPVWFI1KV8liybs6AwGPnq5-Gsp08Ytx06egw2pX8r47iub4saYxY2s0T8S9UF5w-ubK4m/pubhtml#gid=1309821108",
+    },
+    {
+      label: "Calendrier D4",
+      href: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkHCiIxckPVWFI1KV8liybs6AwGPnq5-Gsp08Ytx06egw2pX8r47iub4saYxY2s0T8S9UF5w-ubK4m/pubhtml#gid=1965719293",
+    },
+    {
+      label: "Classements",
+      href: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkHCiIxckPVWFI1KV8liybs6AwGPnq5-Gsp08Ytx06egw2pX8r47iub4saYxY2s0T8S9UF5w-ubK4m/pubhtml#gid=543126141",
+    },
+    {
+      label: "Coupe",
+      href: "https://docs.google.com/spreadsheets/d/e/2PACX-1vTkHCiIxckPVWFI1KV8liybs6AwGPnq5-Gsp08Ytx06egw2pX8r47iub4saYxY2s0T8S9UF5w-ubK4m/pubhtml#gid=1915588028",
+    },
+    {
+      label: "Top44 D3",
+      href: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSuR7emefpS5g6ggVVEA5YQKRZwlJImHE9NBFKFXP5pzIOCg4r6KdJkHFD7q8YUmt4IGTFzPbxRHieY/pubhtml#gid=522827806",
+    },
+    {
+      label: "Top44 D4",
+      href: "https://docs.google.com/spreadsheets/d/e/2PACX-1vSuR7emefpS5g6ggVVEA5YQKRZwlJImHE9NBFKFXP5pzIOCg4r6KdJkHFD7q8YUmt4IGTFzPbxRHieY/pubhtml#gid=395125896",
+    },
+  ];
+
   return (
     <div className="grid gap-6">
       <header>
@@ -125,6 +152,28 @@ export default async function ClassementPage() {
             </div>
           </div>
         ))}
+      </section>
+
+      <section className="card overflow-hidden">
+        <div className="border-b border-slate-200 px-6 py-4">
+          <h2 className="text-2xl font-semibold text-blue-900">Liens utiles laiton 44</h2>
+        </div>
+        <div className="px-6 py-5">
+          <ul className="grid gap-2 text-sm">
+            {liensUtiles.map((lien) => (
+              <li key={lien.href}>
+                <a
+                  href={lien.href}
+                  className="font-semibold text-blue-700 hover:text-blue-800"
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  {lien.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
     </div>
   );
