@@ -28,14 +28,15 @@ export default function RootLayout({
     <html lang="fr">
       <body className={`${cinzel.variable} ${sourceSans.variable} antialiased`}>
         <div className="min-h-screen bg-slate-50 text-slate-900">
-          <header className="border-b border-slate-200 bg-white/80 backdrop-blur">
+          <header className="border-b border-slate-200 bg-black">
             <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-6">
-              <div className="flex items-center justify-center rounded-xl bg-slate-100 p-3">
+              <div className="mx-auto flex w-fit items-center justify-center rounded-2xl border border-white/10 bg-white/10 px-6 py-4 shadow-sm">
                 <Image
-                  src="/images/logo.jpeg"
+                  src="/images/logo-2026.jpeg"
                   alt="Logo du club"
                   width={220}
                   height={140}
+                  className="h-auto w-auto"
                   priority
                 />
               </div>

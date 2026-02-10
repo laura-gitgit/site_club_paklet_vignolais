@@ -11,12 +11,32 @@ export default async function Home() {
           Presentation du club
         </p>
         <h1 className="text-4xl font-semibold text-slate-900 md:text-5xl">
-          Association Pa[K]let Vignolais
+          Paklet Vignolais - Club de palet laiton a Vigneux-de-Bretagne
         </h1>
-        <p className="max-w-2xl text-lg leading-8 text-slate-600">
-          Association de palet basee a Vigneux, nous partageons entrainements,
-          rencontres et moments conviviaux autour du jeu.
-        </p>
+        <div className="grid max-w-3xl gap-4 text-lg leading-8 text-slate-600">
+          <p>
+            Le Paklet Vignolais est un club de palet laiton ancre a Vigneux-de-Bretagne,
+            ou le plaisir du jeu et la convivialite priment avant tout. Nous rassemblons
+            aujourd hui 34 licencies, animes par la meme passion et l envie de partager
+            de bons moments autour du palet.
+          </p>
+          <p>
+            Ouvert a toutes et tous, notre club accueille aussi bien les joueurs debutants
+            que les plus experimentes. Chacun y trouve sa place, quel que soit son niveau.
+            L entraide, le respect et la progression collective sont au coeur de notre
+            fonctionnement.
+          </p>
+          <p>
+            Les entrainements se deroulent dans une ambiance chaleureuse, propice a
+            l apprentissage comme a la competition, toujours dans un esprit de fair-play
+            et de bonne humeur.
+          </p>
+          <p className="font-semibold text-blue-900">
+            Envie d essayer ? Il suffit d avoir l envie de jouer, de lancer un palet et de
+            partager un bon moment. Le Paklet Vignolais recrute et sera heureux de vous
+            accueillir.
+          </p>
+        </div>
         <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
           <Image
             src="/images/paklet_vignolais_recrute.jpeg"
