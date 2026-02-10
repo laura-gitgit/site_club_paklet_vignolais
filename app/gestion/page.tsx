@@ -18,7 +18,7 @@ export default function GestionPage() {
         <div className="card">
           <h2 className="text-2xl font-semibold text-blue-900">Gerer joueurs</h2>
           <p className="mt-2 text-slate-600">Ajouter, activer ou supprimer des joueurs.</p>
-          <Link className="mt-6 inline-flex text-sm font-semibold text-blue-900" href="/joueurs">
+          <Link className="mt-6 inline-flex text-sm font-semibold text-blue-900" href="/gestion/joueurs">
             Aller a la gestion
           </Link>
         </div>

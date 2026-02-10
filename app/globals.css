@@ -1,14 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8f8f8;
-  --foreground: #0b0b0b;
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --club-black: #0b0b0b;
   --club-red: #b91c1c;
-  --club-red-dark: #991b1b;
-  --club-red-soft: #fee2e2;
-  --club-red-light: #fef2f2;
-  --club-border: #e5e5e5;
+  --club-red-dark: #7f1d1d;
+  --club-red-light: #fee2e2;
+  --club-red-soft: #fecaca;
 }
 
 @theme inline {
@@ -19,7 +18,7 @@
 }
 
 body {
-  background: linear-gradient(180deg, #ffffff 0%, #fff1f2 60%, #ffffff 100%);
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 60%, #f8fafc 100%);
   color: var(--foreground);
   font-family: var(--font-body), system-ui, sans-serif;
 }
@@ -35,7 +34,12 @@ h3 {
 }
 
 .button-primary {
-  @apply rounded-full bg-red-700 px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition hover:bg-red-800;
+  @apply rounded-full px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white transition;
+  background-color: var(--club-black) !important;
+}
+
+.button-primary:hover {
+  background-color: var(--club-red-dark) !important;
 }
 
 .button-muted {

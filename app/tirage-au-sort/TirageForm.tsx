@@ -44,7 +44,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
             </div>
           ) : (
             <p className="mt-4 text-sm text-slate-500">
-              Aucun joueur disponible. <Link className="text-blue-900 underline" href="/joueurs">Ajouter des joueurs</Link>
+              Aucun joueur disponible. <Link className="text-blue-900 underline" href="/gestion/joueurs">Ajouter des joueurs</Link>
             </p>
           )}
         </div>
@@ -53,7 +53,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
           <button className="button-primary" type="submit">
             Generer le tirage
           </button>
-          <Link className="button-muted" href="/joueurs">
+          <Link className="button-muted" href="/gestion/joueurs">
             Gerer les joueurs
           </Link>
         </div>
