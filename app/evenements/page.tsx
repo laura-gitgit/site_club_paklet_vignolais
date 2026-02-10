@@ -1,6 +1,10 @@
 import Image from "next/image";
 import { getEvenements } from "@/lib/clubData";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+export const fetchCache = "force-no-store";
+
 export default async function EvenementsPage() {
   const evenements = await getEvenements();
 
@@ -23,7 +27,7 @@ export default async function EvenementsPage() {
             <div key={evenement.id} className="card grid gap-3">
               <div>
                 <h2 className="text-2xl font-semibold text-blue-900">{evenement.titre}</h2>
-                <p className="mt-2 text-sm text-slate-600">{evenement.texte}</p>
+                <p className="mt-2 whitespace-pre-line text-sm text-slate-600">{evenement.texte}</p>
               </div>
               {evenement.photoUrls.length > 0 && (
                 <div className="grid gap-3 sm:grid-cols-2">

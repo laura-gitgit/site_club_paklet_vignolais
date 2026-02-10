@@ -43,7 +43,7 @@ export default async function Home() {
             {evenements.map((evenement) => (
               <div key={evenement.id} className="rounded-xl border border-slate-200 bg-white p-4">
                 <h3 className="text-lg font-semibold text-blue-900">{evenement.titre}</h3>
-                <p className="mt-2 text-sm text-slate-600">{evenement.texte}</p>
+                <p className="mt-2 whitespace-pre-line text-sm text-slate-600">{evenement.texte}</p>
                 {evenement.photoUrls.length > 0 && (
                   <div className="mt-3 grid gap-2">
                     {evenement.photoUrls.map((url, index) => (

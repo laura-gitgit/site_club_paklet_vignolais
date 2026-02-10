@@ -57,6 +57,7 @@ async function ajouterEvenement(formData: FormData) {
   }
 
   revalidatePath("/");
+  revalidatePath("/evenements");
   revalidatePath("/gestion/evenements");
   redirect("/gestion/evenements?success=event");
 }
@@ -81,6 +82,7 @@ async function mettreAJourEvenement(formData: FormData) {
   }
 
   revalidatePath("/");
+  revalidatePath("/evenements");
   revalidatePath("/gestion/evenements");
   redirect("/gestion/evenements?success=event");
 }
@@ -100,6 +102,7 @@ async function supprimerEvenement(formData: FormData) {
   }
 
   revalidatePath("/");
+  revalidatePath("/evenements");
   revalidatePath("/gestion/evenements");
   redirect("/gestion/evenements?success=event");
 }
