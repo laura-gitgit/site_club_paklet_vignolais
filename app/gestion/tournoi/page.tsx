@@ -164,13 +164,13 @@ export default async function GestionTournoiPage({ searchParams }: PageProps) {
       <header>
         <h1 className="text-4xl font-semibold text-blue-900">Gestion tournoi</h1>
         <p className="mt-2 text-lg text-slate-600">
-          Generez les matchs du tournoi interne et ajoutez les scores manquants.
+          Générez les matchs du tournoi interne et ajoutez les scores manquants.
         </p>
       </header>
 
       {success && (
         <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-          Action terminee avec succes.
+          Action terminée avec succès.
         </div>
       )}
       {error && (
@@ -195,7 +195,7 @@ export default async function GestionTournoiPage({ searchParams }: PageProps) {
         </p>
         <form action={genererTour} className="mt-4">
           <button className="button-primary" type="submit">
-            Generer les matchs du tour
+            Générer les matchs du tour
           </button>
         </form>
       </section>

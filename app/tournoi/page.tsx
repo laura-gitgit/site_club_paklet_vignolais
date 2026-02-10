@@ -51,13 +51,13 @@ export default async function TournoiPage({ searchParams }: PageProps) {
       <header>
         <h1 className="text-4xl font-semibold text-blue-900">Tournoi interne 1vs1</h1>
         <p className="mt-2 text-lg text-slate-600">
-          Gere les matchs et consulte le classement.
+          Gère les matchs et consulte le classement.
         </p>
       </header>
 
       {success && (
         <div className="rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-          Action terminee avec succes.
+          Action terminée avec succès.
         </div>
       )}
       {error && (
@@ -129,7 +129,7 @@ export default async function TournoiPage({ searchParams }: PageProps) {
           <div className="mt-4 rounded-xl bg-slate-100 p-6 text-center">
             <p className="text-slate-600">Aucun match en attente</p>
             <p className="mt-2 text-sm text-slate-500">
-              La generation des matchs se fait dans la page Gestion tournoi.
+              La génération des matchs se fait dans la page Gestion tournoi.
             </p>
           </div>
         )}

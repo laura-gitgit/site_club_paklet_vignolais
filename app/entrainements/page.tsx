@@ -35,7 +35,7 @@ export default async function EntrainementsPage() {
       <header>
         <h1 className="text-4xl font-semibold text-blue-900">Entrainements</h1>
         <p className="mt-2 text-lg text-slate-600">
-          Exercices, ateliers et moments d entrainement du club.
+          Exercices pour s'entraîner.
         </p>
         <div className="mt-4">
           <Link className="button-primary" href="/gestion/entrainements">
