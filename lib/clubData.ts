@@ -5,6 +5,7 @@ export type Joueur = {
   nom: string;
   prenom: string | null;
   actif: boolean;
+  licence?: string | null;
 };
 
 export type RencontreMatch = {
@@ -55,7 +56,7 @@ export type EvenementView = Evenement & {
 export async function getAllPlayers(): Promise<Joueur[]> {
   const { data, error } = await supabase
     .from("joueurs")
-    .select("id, nom, prenom, actif")
+    .select("id, nom, prenom, actif, licence")
     .order("prenom", { ascending: true });
 
   if (error || !data) {
@@ -68,7 +69,7 @@ export async function getAllPlayers(): Promise<Joueur[]> {
 export async function getActivePlayers(): Promise<Joueur[]> {
   const { data, error } = await supabase
     .from("joueurs")
-    .select("id, nom, prenom, actif")
+    .select("id, nom, prenom, actif, licence")
     .eq("actif", true)
     .order("prenom", { ascending: true });
 
