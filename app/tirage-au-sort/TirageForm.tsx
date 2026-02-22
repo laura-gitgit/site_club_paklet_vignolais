@@ -12,9 +12,34 @@ function joueurLabel(joueur: Joueur): string {
   return joueur.prenom ?? joueur.nom;
 }
 
+function readStoredSelection(): number[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  const rawValue = localStorage.getItem(STORAGE_KEY);
+  if (!rawValue) {
+    return [];
+  }
+
+  try {
+    const parsedIds = JSON.parse(rawValue);
+    if (!Array.isArray(parsedIds)) {
+      return [];
+    }
+
+    return parsedIds.filter((id): id is number => Number.isInteger(id));
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+    return [];
+  }
+}
+
 export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
   const [state, formAction] = useActionState(generateTirage, initialState);
-  const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([]);
+  const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>(() =>
+    readStoredSelection()
+  );
 
   function resetSelection() {
     setSelectedPlayerIds([]);
@@ -22,26 +47,10 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
   }
 
   useEffect(() => {
-    const rawValue = localStorage.getItem(STORAGE_KEY);
-    if (!rawValue) {
-      return;
-    }
-
-    try {
-      const parsedIds = JSON.parse(rawValue);
-      if (!Array.isArray(parsedIds)) {
-        return;
-      }
-
-      const validIds = new Set(joueurs.map((joueur) => joueur.id));
-      const restoredIds = parsedIds.filter(
-        (id): id is number => Number.isInteger(id) && validIds.has(id)
-      );
-
-      setSelectedPlayerIds(restoredIds);
-    } catch {
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    const validIds = new Set(joueurs.map((joueur) => joueur.id));
+    setSelectedPlayerIds((currentIds) =>
+      currentIds.filter((id) => validIds.has(id))
+    );
   }, [joueurs]);
 
   useEffect(() => {
