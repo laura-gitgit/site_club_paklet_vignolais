@@ -37,10 +37,9 @@ function readStoredSelection(): number[] {
 
 export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
   const [state, formAction] = useActionState(generateTirage, initialState);
-  const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>(() =>
-    readStoredSelection()
-  );
+  const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [hasLoadedSelection, setHasLoadedSelection] = useState(false);
 
   function resetSelection() {
     setSelectedPlayerIds([]);
@@ -49,9 +48,9 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
 
   useEffect(() => {
     const validIds = new Set(joueurs.map((joueur) => joueur.id));
-    setSelectedPlayerIds((currentIds) =>
-      currentIds.filter((id) => validIds.has(id))
-    );
+    const storedSelection = readStoredSelection();
+    setSelectedPlayerIds(storedSelection.filter((id) => validIds.has(id)));
+    setHasLoadedSelection(true);
   }, [joueurs]);
 
   useEffect(() => {
@@ -59,8 +58,14 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
   }, []);
 
   useEffect(() => {
+    if (!hasLoadedSelection) {
+      return;
+    }
+
     localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedPlayerIds));
-  }, [selectedPlayerIds]);
+  }, [hasLoadedSelection, selectedPlayerIds]);
+
+  const isReady = isHydrated && hasLoadedSelection;
 
   function handleTogglePlayer(playerId: number, isChecked: boolean) {
     setSelectedPlayerIds((currentIds) => {
@@ -96,7 +101,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
                     name="joueurs"
                     value={joueur.id}
                     checked={selectedPlayerIds.includes(joueur.id)}
-                    disabled={!isHydrated}
+                    disabled={!isReady}
                     onChange={(event) =>
                       handleTogglePlayer(joueur.id, event.target.checked)
                     }
@@ -114,14 +119,14 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
         </div>
 
         <div className="flex flex-wrap gap-4">
-          <button className="button-primary" type="submit" disabled={!isHydrated}>
+          <button className="button-primary" type="submit" disabled={!isReady}>
             Generer le tirage
           </button>
           <button
             className="rounded-full border border-red-300 bg-red-100 px-4 py-2 text-sm font-semibold text-red-800 hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-60"
             type="button"
             onClick={resetSelection}
-            disabled={!isHydrated}
+            disabled={!isReady}
           >
             Reinitialiser la selection
           </button>
@@ -130,7 +135,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
           </Link>
         </div>
 
-        {!isHydrated && (
+        {!isReady && (
           <p className="text-sm text-slate-500">
             Chargement de la selection...
           </p>
