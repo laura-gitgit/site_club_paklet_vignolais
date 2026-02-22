@@ -66,6 +66,15 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedPlayerIds));
   }, [isHydrated, selectedPlayerIds]);
 
+  useEffect(() => {
+    if (!state.selectedIds) {
+      return;
+    }
+
+    const validIds = new Set(joueurs.map((joueur) => String(joueur.id)));
+    setSelectedPlayerIds(state.selectedIds.filter((id) => validIds.has(id)));
+  }, [joueurs, state.selectedIds]);
+
   const isReady = isHydrated;
 
   function handleTogglePlayer(playerId: string, isChecked: boolean) {
@@ -87,16 +96,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
         </div>
       )}
 
-      <form
-        action={formAction}
-        className="grid gap-6"
-        onSubmit={(event) => {
-          const submittedIds = new FormData(event.currentTarget)
-            .getAll("joueurs")
-            .map((id) => String(id));
-          setSelectedPlayerIds(submittedIds);
-        }}
-      >
+      <form action={formAction} className="grid gap-6">
         <div className="card">
           <h2 className="text-2xl font-semibold text-blue-900">Joueurs disponibles</h2>
           {joueurs.length > 0 ? (
