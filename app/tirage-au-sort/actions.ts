@@ -13,6 +13,7 @@ export type TirageEquipe = {
 export type TirageState = {
   error?: string;
   equipes?: TirageEquipe[];
+  selectedIds?: string[];
 };
 
 function shuffle<T>(items: T[]): T[] {
@@ -28,10 +29,14 @@ export async function generateTirage(
   _prevState: TirageState,
   formData: FormData
 ): Promise<TirageState> {
-  const ids = formData.getAll("joueurs").map((id) => Number(id));
+  const selectedIds = formData.getAll("joueurs").map((id) => String(id));
+  const ids = selectedIds.map((id) => Number(id));
 
   if (ids.length < 2) {
-    return { error: "Au moins 2 joueurs sont necessaires pour un tirage." };
+    return {
+      error: "Au moins 2 joueurs sont necessaires pour un tirage.",
+      selectedIds,
+    };
   }
 
   const { data, error } = await supabase
@@ -40,7 +45,7 @@ export async function generateTirage(
     .in("id", ids);
 
   if (error || !data) {
-    return { error: "Impossible de recuperer les joueurs." };
+    return { error: "Impossible de recuperer les joueurs.", selectedIds };
   }
 
   const joueurs = shuffle(data as Joueur[]);
@@ -84,5 +89,5 @@ export async function generateTirage(
     }
   }
 
-  return { equipes };
+  return { equipes, selectedIds };
 }

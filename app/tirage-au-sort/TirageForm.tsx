@@ -67,6 +67,15 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedPlayerIds));
   }, [hasLoadedSelection, selectedPlayerIds]);
 
+  useEffect(() => {
+    if (!state.selectedIds || !hasLoadedSelection) {
+      return;
+    }
+
+    const validIds = new Set(joueurs.map((joueur) => String(joueur.id)));
+    setSelectedPlayerIds(state.selectedIds.filter((id) => validIds.has(id)));
+  }, [hasLoadedSelection, joueurs, state.selectedIds]);
+
   const isReady = isHydrated && hasLoadedSelection;
 
   function handleTogglePlayer(playerId: string, isChecked: boolean) {
