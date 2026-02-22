@@ -12,7 +12,7 @@ function joueurLabel(joueur: Joueur): string {
   return joueur.prenom ?? joueur.nom;
 }
 
-function readStoredSelection(): number[] {
+function readStoredSelection(): string[] {
   if (typeof window === "undefined") {
     return [];
   }
@@ -28,7 +28,9 @@ function readStoredSelection(): number[] {
       return [];
     }
 
-    return parsedIds.filter((id): id is number => Number.isInteger(id));
+    return parsedIds
+      .map((id) => String(id).trim())
+      .filter((id) => id.length > 0);
   } catch {
     localStorage.removeItem(STORAGE_KEY);
     return [];
@@ -37,7 +39,7 @@ function readStoredSelection(): number[] {
 
 export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
   const [state, formAction] = useActionState(generateTirage, initialState);
-  const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([]);
+  const [selectedPlayerIds, setSelectedPlayerIds] = useState<string[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
   const [hasLoadedSelection, setHasLoadedSelection] = useState(false);
 
@@ -47,7 +49,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
   }
 
   useEffect(() => {
-    const validIds = new Set(joueurs.map((joueur) => joueur.id));
+    const validIds = new Set(joueurs.map((joueur) => String(joueur.id)));
     const storedSelection = readStoredSelection();
     setSelectedPlayerIds(storedSelection.filter((id) => validIds.has(id)));
     setHasLoadedSelection(true);
@@ -67,7 +69,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
 
   const isReady = isHydrated && hasLoadedSelection;
 
-  function handleTogglePlayer(playerId: number, isChecked: boolean) {
+  function handleTogglePlayer(playerId: string, isChecked: boolean) {
     setSelectedPlayerIds((currentIds) => {
       if (isChecked) {
         return currentIds.includes(playerId)
@@ -100,10 +102,10 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
                     type="checkbox"
                     name="joueurs"
                     value={joueur.id}
-                    checked={selectedPlayerIds.includes(joueur.id)}
+                    checked={selectedPlayerIds.includes(String(joueur.id))}
                     disabled={!isReady}
                     onChange={(event) =>
-                      handleTogglePlayer(joueur.id, event.target.checked)
+                      handleTogglePlayer(String(joueur.id), event.target.checked)
                     }
                     className="h-5 w-5 accent-blue-900"
                   />
