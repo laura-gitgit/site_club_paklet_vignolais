@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
 import type { Joueur } from "@/lib/clubData";
 import { generateTirage, TirageState } from "./actions";
 
 const initialState: TirageState = {};
+const STORAGE_KEY = "tirage-selected-players";
 
 function joueurLabel(joueur: Joueur): string {
   return joueur.prenom ?? joueur.nom;
@@ -13,6 +14,50 @@ function joueurLabel(joueur: Joueur): string {
 
 export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
   const [state, formAction] = useActionState(generateTirage, initialState);
+  const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>([]);
+
+  function resetSelection() {
+    setSelectedPlayerIds([]);
+    localStorage.removeItem(STORAGE_KEY);
+  }
+
+  useEffect(() => {
+    const rawValue = localStorage.getItem(STORAGE_KEY);
+    if (!rawValue) {
+      return;
+    }
+
+    try {
+      const parsedIds = JSON.parse(rawValue);
+      if (!Array.isArray(parsedIds)) {
+        return;
+      }
+
+      const validIds = new Set(joueurs.map((joueur) => joueur.id));
+      const restoredIds = parsedIds.filter(
+        (id): id is number => Number.isInteger(id) && validIds.has(id)
+      );
+
+      setSelectedPlayerIds(restoredIds);
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, [joueurs]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedPlayerIds));
+  }, [selectedPlayerIds]);
+
+  function handleTogglePlayer(playerId: number, isChecked: boolean) {
+    setSelectedPlayerIds((currentIds) => {
+      if (isChecked) {
+        return currentIds.includes(playerId)
+          ? currentIds
+          : [...currentIds, playerId];
+      }
+      return currentIds.filter((id) => id !== playerId);
+    });
+  }
 
   return (
     <div className="grid gap-6">
@@ -36,6 +81,10 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
                     type="checkbox"
                     name="joueurs"
                     value={joueur.id}
+                    checked={selectedPlayerIds.includes(joueur.id)}
+                    onChange={(event) =>
+                      handleTogglePlayer(joueur.id, event.target.checked)
+                    }
                     className="h-5 w-5 accent-blue-900"
                   />
                   <span className="select-none">{joueurLabel(joueur)}</span>
@@ -52,6 +101,9 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
         <div className="flex flex-wrap gap-4">
           <button className="button-primary" type="submit">
             Generer le tirage
+          </button>
+          <button className="button-muted" type="button" onClick={resetSelection}>
+            Reinitialiser la selection
           </button>
           <Link className="button-muted" href="/gestion/joueurs">
             Gerer les joueurs

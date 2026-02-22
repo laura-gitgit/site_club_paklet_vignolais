@@ -1,7 +1,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { createServerActionClient, createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { buildClassement, getActivePlayers, getMatches } from "@/lib/clubData";
-import { supabase } from "@/lib/supabaseClient";
 
 type PageProps = {
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -9,6 +10,7 @@ type PageProps = {
 
 async function enregistrerScore(formData: FormData) {
   "use server";
+  const supabase = createServerActionClient({ cookies });
   const id = Number(formData.get("id"));
   const scoreJ1 = Number(formData.get("score_joueur1"));
   const scoreJ2 = Number(formData.get("score_joueur2"));
@@ -35,6 +37,21 @@ async function enregistrerScore(formData: FormData) {
 }
 
 export default async function TournoiPage({ searchParams }: PageProps) {
+  const authSupabase = createServerComponentClient({ cookies });
+  const {
+    data: { session },
+  } = await authSupabase.auth.getSession();
+
+  const isAdmin = !!session?.user?.email
+    ? !!(
+        await authSupabase
+          .from("admin_users")
+          .select("email")
+          .eq("email", session.user.email)
+          .maybeSingle()
+      ).data
+    : false;
+
   const [players, matches] = await Promise.all([
     getActivePlayers(),
     getMatches(),
@@ -87,39 +104,45 @@ export default async function TournoiPage({ searchParams }: PageProps) {
                         {joueur1.prenom ?? joueur1.nom} vs {joueur2.prenom ?? joueur2.nom}
                       </p>
                     </div>
-                    <form action={enregistrerScore} className="grid gap-3 md:grid-cols-5 md:items-end">
-                      <input type="hidden" name="id" value={match.id} />
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-600" htmlFor={scoreJ1Id}>
-                          Score {joueur1.prenom ?? joueur1.nom}
-                        </label>
-                        <input
-                          id={scoreJ1Id}
-                          name="score_joueur1"
-                          type="number"
-                          min={0}
-                          required
-                          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-center"
-                        />
-                      </div>
-                      <div className="hidden text-center text-lg font-semibold text-slate-500 md:block">-</div>
-                      <div>
-                        <label className="block text-xs font-semibold text-slate-600" htmlFor={scoreJ2Id}>
-                          Score {joueur2.prenom ?? joueur2.nom}
-                        </label>
-                        <input
-                          id={scoreJ2Id}
-                          name="score_joueur2"
-                          type="number"
-                          min={0}
-                          required
-                          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-center"
-                        />
-                      </div>
-                      <button className="button-primary md:col-span-5" type="submit">
-                        Enregistrer le score
-                      </button>
-                    </form>
+                    {isAdmin ? (
+                      <form action={enregistrerScore} className="grid gap-3 md:grid-cols-5 md:items-end">
+                        <input type="hidden" name="id" value={match.id} />
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-600" htmlFor={scoreJ1Id}>
+                            Score {joueur1.prenom ?? joueur1.nom}
+                          </label>
+                          <input
+                            id={scoreJ1Id}
+                            name="score_joueur1"
+                            type="number"
+                            min={0}
+                            required
+                            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-center"
+                          />
+                        </div>
+                        <div className="hidden text-center text-lg font-semibold text-slate-500 md:block">-</div>
+                        <div>
+                          <label className="block text-xs font-semibold text-slate-600" htmlFor={scoreJ2Id}>
+                            Score {joueur2.prenom ?? joueur2.nom}
+                          </label>
+                          <input
+                            id={scoreJ2Id}
+                            name="score_joueur2"
+                            type="number"
+                            min={0}
+                            required
+                            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-center"
+                          />
+                        </div>
+                        <button className="button-primary md:col-span-5" type="submit">
+                          Enregistrer le score
+                        </button>
+                      </form>
+                    ) : (
+                      <p className="text-sm text-slate-500">
+                        Connectez-vous en admin pour saisir les scores.
+                      </p>
+                    )}
                   </div>
                 </div>
               );

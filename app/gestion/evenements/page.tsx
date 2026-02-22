@@ -1,8 +1,9 @@
 import Image from "next/image";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { getEvenements } from "@/lib/clubData";
-import { supabase } from "@/lib/supabaseClient";
 
 type PageProps = {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -14,6 +15,7 @@ function sanitizeFileName(value: string): string {
 
 async function ajouterEvenement(formData: FormData) {
   "use server";
+  const supabase = createServerActionClient({ cookies });
   const titre = String(formData.get("titre"));
   const texte = String(formData.get("texte"));
   const files = formData.getAll("photos").filter((file) => file instanceof File) as File[];
@@ -64,6 +66,7 @@ async function ajouterEvenement(formData: FormData) {
 
 async function mettreAJourEvenement(formData: FormData) {
   "use server";
+  const supabase = createServerActionClient({ cookies });
   const id = Number(formData.get("id"));
   const titre = String(formData.get("titre"));
   const texte = String(formData.get("texte"));
@@ -89,6 +92,7 @@ async function mettreAJourEvenement(formData: FormData) {
 
 async function supprimerEvenement(formData: FormData) {
   "use server";
+  const supabase = createServerActionClient({ cookies });
   const id = Number(formData.get("id"));
 
   if (Number.isNaN(id)) {
