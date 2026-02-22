@@ -39,9 +39,10 @@ function readStoredSelection(): string[] {
 
 export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
   const [state, formAction] = useActionState(generateTirage, initialState);
-  const [selectedPlayerIds, setSelectedPlayerIds] = useState<string[]>([]);
+  const [selectedPlayerIds, setSelectedPlayerIds] = useState<string[]>(() =>
+    readStoredSelection()
+  );
   const [isHydrated, setIsHydrated] = useState(false);
-  const [hasLoadedSelection, setHasLoadedSelection] = useState(false);
 
   function resetSelection() {
     setSelectedPlayerIds([]);
@@ -50,9 +51,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
 
   useEffect(() => {
     const validIds = new Set(joueurs.map((joueur) => String(joueur.id)));
-    const storedSelection = readStoredSelection();
-    setSelectedPlayerIds(storedSelection.filter((id) => validIds.has(id)));
-    setHasLoadedSelection(true);
+    setSelectedPlayerIds((currentIds) => currentIds.filter((id) => validIds.has(id)));
   }, [joueurs]);
 
   useEffect(() => {
@@ -60,23 +59,14 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
   }, []);
 
   useEffect(() => {
-    if (!hasLoadedSelection) {
+    if (!isHydrated) {
       return;
     }
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedPlayerIds));
-  }, [hasLoadedSelection, selectedPlayerIds]);
+  }, [isHydrated, selectedPlayerIds]);
 
-  useEffect(() => {
-    if (!state.selectedIds || !hasLoadedSelection) {
-      return;
-    }
-
-    const validIds = new Set(joueurs.map((joueur) => String(joueur.id)));
-    setSelectedPlayerIds(state.selectedIds.filter((id) => validIds.has(id)));
-  }, [hasLoadedSelection, joueurs, state.selectedIds]);
-
-  const isReady = isHydrated && hasLoadedSelection;
+  const isReady = isHydrated;
 
   function handleTogglePlayer(playerId: string, isChecked: boolean) {
     setSelectedPlayerIds((currentIds) => {
@@ -97,7 +87,16 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
         </div>
       )}
 
-      <form action={formAction} className="grid gap-6">
+      <form
+        action={formAction}
+        className="grid gap-6"
+        onSubmit={(event) => {
+          const submittedIds = new FormData(event.currentTarget)
+            .getAll("joueurs")
+            .map((id) => String(id));
+          setSelectedPlayerIds(submittedIds);
+        }}
+      >
         <div className="card">
           <h2 className="text-2xl font-semibold text-blue-900">Joueurs disponibles</h2>
           {joueurs.length > 0 ? (
