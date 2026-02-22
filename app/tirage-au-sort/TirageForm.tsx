@@ -40,6 +40,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<number[]>(() =>
     readStoredSelection()
   );
+  const [isHydrated, setIsHydrated] = useState(false);
 
   function resetSelection() {
     setSelectedPlayerIds([]);
@@ -52,6 +53,10 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
       currentIds.filter((id) => validIds.has(id))
     );
   }, [joueurs]);
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedPlayerIds));
@@ -91,6 +96,7 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
                     name="joueurs"
                     value={joueur.id}
                     checked={selectedPlayerIds.includes(joueur.id)}
+                    disabled={!isHydrated}
                     onChange={(event) =>
                       handleTogglePlayer(joueur.id, event.target.checked)
                     }
@@ -108,16 +114,27 @@ export default function TirageForm({ joueurs }: { joueurs: Joueur[] }) {
         </div>
 
         <div className="flex flex-wrap gap-4">
-          <button className="button-primary" type="submit">
+          <button className="button-primary" type="submit" disabled={!isHydrated}>
             Generer le tirage
           </button>
-          <button className="button-muted" type="button" onClick={resetSelection}>
+          <button
+            className="rounded-full border border-red-300 bg-red-100 px-4 py-2 text-sm font-semibold text-red-800 hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-60"
+            type="button"
+            onClick={resetSelection}
+            disabled={!isHydrated}
+          >
             Reinitialiser la selection
           </button>
           <Link className="button-muted" href="/gestion/joueurs">
             Gerer les joueurs
           </Link>
         </div>
+
+        {!isHydrated && (
+          <p className="text-sm text-slate-500">
+            Chargement de la selection...
+          </p>
+        )}
       </form>
 
       {state.equipes && state.equipes.length > 0 && (
