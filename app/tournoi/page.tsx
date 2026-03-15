@@ -38,20 +38,6 @@ async function enregistrerScore(formData: FormData) {
 }
 
 export default async function TournoiPage({ searchParams }: PageProps) {
-  const authSupabase = createServerComponentClient({ cookies });
-  const {
-    data: { session },
-  } = await authSupabase.auth.getSession();
-
-  const isAdmin = !!session?.user?.email
-    ? !!(
-        await authSupabase
-          .from("admin_users")
-          .select("email")
-          .eq("email", session.user.email)
-          .maybeSingle()
-      ).data
-    : false;
 
   const [players, matches] = await Promise.all([
     getActivePlayers(),
