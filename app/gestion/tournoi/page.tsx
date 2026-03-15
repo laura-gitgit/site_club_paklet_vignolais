@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
+export const dynamic = "force-dynamic";
 import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { getActivePlayers, getMatches } from "@/lib/clubData";
 import ResetTournoiForm from "@/app/gestion/tournoi/ResetTournoiForm";
