@@ -1,8 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-export const dynamic = "force-dynamic";
-import { createClient } from "@/lib/server";
+import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
 import { getAllPlayers } from "@/lib/clubData";
 
 type PageProps = {
@@ -11,7 +10,7 @@ type PageProps = {
 
 async function addJoueur(formData: FormData) {
   "use server";
- const supabase = await createClient();
+  const supabase = createServerActionClient({ cookies });
   const prenom = String(formData.get("prenom") ?? "").trim();
   const nom = String(formData.get("nom") ?? "").trim();
   const licence = String(formData.get("licence") ?? "").trim();
@@ -37,7 +36,7 @@ async function addJoueur(formData: FormData) {
 
 async function deleteJoueur(formData: FormData) {
   "use server";
-  const supabase = await createClient();
+  const supabase = createServerActionClient({ cookies });
   const id = Number(formData.get("id"));
 
   const { error } = await supabase.from("Joueurs").delete().eq("id", id);
