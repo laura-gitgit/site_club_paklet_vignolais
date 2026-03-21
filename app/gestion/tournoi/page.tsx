@@ -2,7 +2,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 export const dynamic = "force-dynamic";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
+import { createClient } from "@/lib/server"; 
 import { getActivePlayers, getMatches } from "@/lib/clubData";
 import ResetTournoiForm from "@/app/gestion/tournoi/ResetTournoiForm";
 
@@ -21,7 +21,7 @@ function shuffle<T>(items: T[]): T[] {
 
 async function genererTour() {
   "use server";
-  const supabase = createServerActionClient({ cookies });
+  const supabase = await createClient();
   const [players, matches] = await Promise.all([
     getActivePlayers(),
     getMatches(),
@@ -107,7 +107,7 @@ async function genererTour() {
 
 async function ajouterMatchManuel(formData: FormData) {
   "use server";
-  const supabase = createServerActionClient({ cookies });
+  const supabase = await createClient();
   const joueur1Id = Number(formData.get("joueur1_id"));
   const joueur2Id = Number(formData.get("joueur2_id"));
   const scoreJ1 = Number(formData.get("score_joueur1"));
@@ -142,7 +142,7 @@ async function ajouterMatchManuel(formData: FormData) {
 
 async function reinitialiserTournoi() {
   "use server";
-  const supabase = createServerActionClient({ cookies });
+  const supabase = await createClient();
   const { error } = await supabase.from("rencontre_matches").delete().neq("id", 0);
   if (error) {
     redirect("/gestion/tournoi?error=reset");
