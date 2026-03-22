@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient"; // ← ton client simple
+import { supabaseBrowser } from "@/lib/supabase-brower"; // ← ton client simple
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -21,7 +21,7 @@ export default function LoginForm() {
           setError(null);
 
           try {
-            const { data, error: signInError } = await supabase.auth.signInWithPassword({
+            const { data, error: signInError } = await supabaseBrower.auth.signInWithPassword({
               email,
               password,
             });
