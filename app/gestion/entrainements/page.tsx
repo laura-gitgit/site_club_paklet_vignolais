@@ -1,8 +1,7 @@
 import Image from "next/image";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabaseClient"; 
 
 type TrainingPhoto = {
   name: string;
@@ -11,7 +10,6 @@ type TrainingPhoto = {
 };
 
 async function listTrainingPhotos(): Promise<TrainingPhoto[]> {
-  const supabase = createServerActionClient({ cookies });
   const { data, error } = await supabase.storage
     .from("club-images")
     .list("entrainements", { sortBy: { column: "name", order: "asc" } });
@@ -33,7 +31,6 @@ async function listTrainingPhotos(): Promise<TrainingPhoto[]> {
 
 async function ajouterExercice(formData: FormData) {
   "use server";
-  const supabase = createServerActionClient({ cookies });
   const file = formData.get("file");
 
   if (!(file instanceof File) || file.size === 0) {
@@ -62,7 +59,6 @@ async function ajouterExercice(formData: FormData) {
 
 async function supprimerExercice(formData: FormData) {
   "use server";
-  const supabase = createServerActionClient({ cookies });
   const path = String(formData.get("path"));
   if (!path) {
     redirect("/gestion/entrainements?error=delete");

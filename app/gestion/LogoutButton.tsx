@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
@@ -15,7 +15,6 @@ export default function LogoutButton() {
       disabled={isLoading}
       onClick={async () => {
         setIsLoading(true);
-        const supabase = createClientComponentClient();
         await supabase.auth.signOut();
         router.push("/gestion/login");
         router.refresh();

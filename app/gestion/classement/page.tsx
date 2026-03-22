@@ -1,8 +1,7 @@
 import Image from "next/image";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
-import { createServerActionClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabaseClient"; 
 import { getClassementAssets, getRencontres } from "@/lib/clubData";
 
 type PageProps = {
@@ -17,7 +16,6 @@ type UploadKey =
 
 async function uploadAsset(formData: FormData) {
   "use server";
-  const supabase = createServerActionClient({ cookies });
   const key = String(formData.get("key")) as UploadKey;
   const file = formData.get("file");
 
@@ -55,7 +53,6 @@ async function uploadAsset(formData: FormData) {
 
 async function ajouterRencontre(formData: FormData) {
   "use server";
-  const supabase = createServerActionClient({ cookies });
   const equipe = String(formData.get("equipe"));
   const type = String(formData.get("type"));
   const date = String(formData.get("date"));
@@ -85,7 +82,6 @@ async function ajouterRencontre(formData: FormData) {
 
 async function mettreAJourRencontre(formData: FormData) {
   "use server";
-  const supabase = createServerActionClient({ cookies });
   const id = Number(formData.get("id"));
   const equipe = String(formData.get("equipe"));
   const type = String(formData.get("type"));
@@ -113,7 +109,6 @@ async function mettreAJourRencontre(formData: FormData) {
 
 async function supprimerRencontre(formData: FormData) {
   "use server";
-  const supabase = createServerActionClient({ cookies });
   const id = Number(formData.get("id"));
   if (Number.isNaN(id)) {
     redirect("/gestion/classement?error=rencontre");

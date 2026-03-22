@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabaseClient"; // ← ton client simple
 
 export default function LoginForm() {
   const [email, setEmail] = useState("");
@@ -21,7 +21,6 @@ export default function LoginForm() {
           setError(null);
 
           try {
-            const supabase = createClientComponentClient();
             const { data, error: signInError } = await supabase.auth.signInWithPassword({
               email,
               password,
@@ -32,10 +31,7 @@ export default function LoginForm() {
               return;
             }
 
-            const next =
-              typeof window !== "undefined"
-                ? new URLSearchParams(window.location.search).get("next") || "/gestion"
-                : "/gestion";
+            const next = new URLSearchParams(window.location.search).get("next") || "/gestion";
             router.push(next);
             router.refresh();
           } catch {
@@ -44,6 +40,7 @@ export default function LoginForm() {
             setIsLoading(false);
           }
         }}
+
       >
         <div>
           <label className="block text-sm font-semibold text-slate-700" htmlFor="email">
