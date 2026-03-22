@@ -19,7 +19,7 @@ async function addJoueur(formData: FormData) {
     redirect("/gestion/joueurs?error=prenom");
   }
 
-  const { error } = await supabase.from("Joueurs").insert({
+  const { error } = await supabase.from("joueurs").insert({
     nom,
     prenom,
     licence: licence || null,
@@ -39,7 +39,7 @@ async function deleteJoueur(formData: FormData) {
   const supabase = createServerActionClient({ cookies });
   const id = Number(formData.get("id"));
 
-  const { error } = await supabase.from("Joueurs").delete().eq("id", id);
+  const { error } = await supabase.from("joueurs").delete().eq("id", id);
 
   if (error) {
     redirect("/gestion/joueurs?error=delete");
