@@ -1,6 +1,6 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { supabase } from "@/lib/supabaseClient"; // ← ton client simple
+import { supabase } from "@/lib/supabaseClient"; 
 import { getAllPlayers } from "@/lib/clubData";
 
 type PageProps = {
