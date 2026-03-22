@@ -1,8 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 export const dynamic = "force-dynamic";
-import { createServerActionClient, createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { supabase } from "@/lib/supabaseClient"; 
 import { buildClassement, getActivePlayers, getMatches } from "@/lib/clubData";
 
 type PageProps = {
@@ -11,7 +10,6 @@ type PageProps = {
 
 async function enregistrerScore(formData: FormData) {
   "use server";
-  const supabase = createServerActionClient({ cookies });
   const id = Number(formData.get("id"));
   const scoreJ1 = Number(formData.get("score_joueur1"));
   const scoreJ2 = Number(formData.get("score_joueur2"));
@@ -29,9 +27,7 @@ async function enregistrerScore(formData: FormData) {
     })
     .eq("id", id);
 
-  if (error) {
-    redirect("/tournoi?error=score");
-  }
+  if (error) redirect("/tournoi?error=score");
 
   revalidatePath("/tournoi");
   redirect("/tournoi?success=score");
