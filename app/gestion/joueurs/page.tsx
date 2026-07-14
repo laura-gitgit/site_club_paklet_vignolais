@@ -1,6 +1,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient"; 
+import Link from "next/link";
 import { getAllPlayers } from "@/lib/clubData";
 
 type PageProps = {
@@ -187,6 +188,9 @@ export default async function GestionJoueursPage({ searchParams }: PageProps) {
                           Supprimer
                         </button>
                       </form>
+                      <Link href={`/gestion/joueurs/${joueur.id}`} className="ml-3 text-sm font-semibold text-blue-900 hover:underline">
+                        Modifier
+                      </Link>
                     </td>
                   </tr>
                 ))}
