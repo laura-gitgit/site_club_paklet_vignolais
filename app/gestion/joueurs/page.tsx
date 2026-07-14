@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient"; 
 import { getAllPlayers } from "@/lib/clubData";
+import { ActifToggle } from "./ActifToggle";
 
 type PageProps = {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -31,6 +32,7 @@ async function addJoueur(formData: FormData) {
   }
 
   revalidatePath("/gestion/joueurs");
+  revalidatePath("/tirage-au-sort");
   redirect("/gestion/joueurs?success=added");
 }
 
@@ -45,6 +47,7 @@ async function deleteJoueur(formData: FormData) {
   }
 
   revalidatePath("/gestion/joueurs");
+  revalidatePath("/tirage-au-sort");
   redirect("/gestion/joueurs?success=deleted");
 }
 
@@ -60,6 +63,7 @@ async function toggleActif(formData: FormData) {
   }
 
   revalidatePath("/gestion/joueurs");
+  revalidatePath("/tirage-au-sort");
   redirect("/gestion/joueurs?success=updated");
 }
 
@@ -175,8 +179,11 @@ export default async function GestionJoueursPage({ searchParams }: PageProps) {
                       <form action={toggleActif} className="inline">
                         <input type="hidden" name="id" value={joueur.id} />
                         <label className="inline-flex items-center gap-2">
-                          <input type="checkbox" name="actif" defaultChecked={joueur.actif} />
-                          <button type="submit" className="sr-only">Save</button>
+                          <ActifToggle
+                            joueurId={joueur.id}
+                            initialActif={joueur.actif}
+                            toggleActif={toggleActif}
+                          />
                         </label>
                       </form>
                     </td>
