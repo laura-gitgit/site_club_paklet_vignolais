@@ -12,6 +12,7 @@ async function addJoueur(formData: FormData) {
   const prenom = String(formData.get("prenom") ?? "").trim();
   const nom = String(formData.get("nom") ?? "").trim();
   const licence = String(formData.get("licence") ?? "").trim();
+  const actif = formData.get("actif") ? true : false;
 
   if (!prenom || !nom) {
     redirect("/gestion/joueurs?error=prenom");
@@ -21,6 +22,7 @@ async function addJoueur(formData: FormData) {
     nom,
     prenom,
     licence: licence || null,
+    actif,
   });
 
   if (error) {
@@ -44,6 +46,21 @@ async function deleteJoueur(formData: FormData) {
 
   revalidatePath("/gestion/joueurs");
   redirect("/gestion/joueurs?success=deleted");
+}
+
+async function toggleActif(formData: FormData) {
+  "use server";
+  const id = Number(formData.get("id"));
+  const actif = formData.get("actif") ? true : false;
+
+  const { error } = await supabase.from("joueurs").update({ actif }).eq("id", id);
+
+  if (error) {
+    redirect("/gestion/joueurs?error=update");
+  }
+
+  revalidatePath("/gestion/joueurs");
+  redirect("/gestion/joueurs?success=updated");
 }
 
 export default async function GestionJoueursPage({ searchParams }: PageProps) {
@@ -110,6 +127,12 @@ export default async function GestionJoueursPage({ searchParams }: PageProps) {
               className="mt-2 w-full rounded-lg border border-slate-300 px-4 py-2"
             />
           </div>
+          <div className="flex items-center gap-3">
+            <label className="block text-sm font-semibold text-slate-700" htmlFor="actif">
+              Actif
+            </label>
+            <input id="actif" name="actif" type="checkbox" defaultChecked className="h-5 w-5 accent-blue-900" />
+          </div>
           <button className="button-primary md:col-span-2" type="submit">
             Ajouter
           </button>
@@ -132,6 +155,7 @@ export default async function GestionJoueursPage({ searchParams }: PageProps) {
                   <th className="px-6 py-3">Prenom</th>
                   <th className="px-6 py-3">Nom</th>
                   <th className="px-6 py-3">Licence</th>
+                  <th className="px-6 py-3 text-center">Actif</th>
                   <th className="px-6 py-3 text-center">Actions</th>
                 </tr>
               </thead>
@@ -146,6 +170,15 @@ export default async function GestionJoueursPage({ searchParams }: PageProps) {
                     </td>
                     <td className="px-6 py-3 text-slate-700">
                       {joueur.licence || "-"}
+                    </td>
+                    <td className="px-6 py-3 text-center">
+                      <form action={toggleActif} className="inline">
+                        <input type="hidden" name="id" value={joueur.id} />
+                        <label className="inline-flex items-center gap-2">
+                          <input type="checkbox" name="actif" defaultChecked={joueur.actif} />
+                          <button type="submit" className="sr-only">Save</button>
+                        </label>
+                      </form>
                     </td>
                     <td className="px-6 py-3 text-center">
                       <form action={deleteJoueur} className="inline">
